@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Our Night On The Terrace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="scene">
+
+    <!-- Background Sky Video -->
+    <video src="sky-2.mp4" autoplay muted loop playsinline></video>
+
+    <!-- Dark overlay -->
+    <div class="night-overlay" id="nightOverlay"></div>
+
+    <!-- Stars overlay -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Moon -->
+    <div class="moon" id="moon"></div>
+
+    <!-- Couple -->
+    <img src="main-couple.png" class="couple" alt="Couple on terrace" />
+
+    <!-- Dialogue + reply -->
+    <div class="dialogue">
+      <div id="lineContainer"></div>
+
+      <!-- Reply Input (hidden by default) -->
+      <div class="reply-area" id="replyArea">
+        <div class="reply-label" id="replyLabel">Type reply to continue</div>
+
+        <div class="reply-row">
+          <input
+            id="replyInput"
+            type="text"
+            autocomplete="off"
+            placeholder="ok, haa, yaa, hoo..."
+          />
+          <button id="replyBtn">Send</button>
+        </div>
+
+        <div class="reply-hint">
+          Use short replies like: ok, haa, yaa, hoo, hmm
+        </div>
+      </div>
+
+      <div class="hint" id="hint">Tap anywhere to start</div>
+    </div>
+
+    <!-- Replay Button -->
+    <button class="replay-btn" id="replayBtn">Replay this night</button>
+
+    <!-- Tap area to advance (disabled while waiting for reply) -->
+    <div class="tap-area" id="tapArea"></div>
+  </div>
+
+  <script>
+    // Conversation with reply logic
+    // You can later add many more entries here
+    const script = [
+  // --- Playful start ---
+
+  {
+    speaker: "Me",
+    type: "me",
+    text: "hmmmmmmm ",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "hmmmm ",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "sooo....",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "Why did you came?",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "to meet my sister...",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "good....then go and spend time with her....",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Why are you staring at me like that?",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "Because you don’t have the courage to look at me. You’re pretending to admire the sky, but I know you’re just avoiding eye contact.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "And what’s your problem if I look at the sky?",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "The sky has nothing tonight. No moon, no stars. So you’re left with only one option — me.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "That’s true… the night is completely empty. No stars, no moon… just this terrace, the silence..... and us.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "And somehow, I still like it. This place feels like ours… midnight terrace.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Whenever I imagine peace… this is exactly how it looks. Here. At night. With you.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "You talk like you’re peaceful, but you carry a whole storm inside you. Still… your face looks calm.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Whenever I look at you… the storm slows down. Maybe even stops.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "Do you remember the day I told you I had feelings for you?",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "ME",
+    type: "me",
+    text: "How could I forget? You didn’t even say “I love you,” but somehow it felt heavier than those three words.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "I couldn’t say that word. I just said… “I’m having feelings for you.”",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "And I told you, “Take time, think about it, and come back to me.”",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "And the next day I came straight to you. No hesitation.No doubt. I knew exactly what I wanted.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "That day… for the first time in my life, someone chose me even after knowing everything. My past. My mistakes. My stories.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "You saw the man behind the noise, and for the first time, I wanted to be seen.",
+    needsReplyFrom: "her"
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "That shocked me. The things that people used to judge me for… the things I was ashamed to tell anyone… yet you stayed.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "I was that guy… dated so many women, confused, immature, always running. but at you I don't know, I stopped",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "Ik Ik",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "Soooooo",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "what else......??",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Listen.....",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "I like you kavya....very much but it's not like I'm in love with you. but",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "I want you....and I need you in my life......",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "I don't know what's this relation is and I don't want to name it. but I need it",
+    needsReplyFrom: "her"
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "yaaahhhhh.....and....",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "I'm falling for you teja",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "I need you in my life — not for a moment, but for a lifetime.",
+    needsReplyFrom: null
+  },
+
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Somewhere between yesterday’s silence and today’s breath, my heart whispered your name…",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "and I realised, I want you. I need you, like the night needs the moon to feel complete.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "You’re the one I will choose, again and again.....",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "I'm going to make a promise to you, Kavya… it's definitely not a commitment.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "No matter what, I will always stay with you… especially when you need me the most. You will always have a shoulder to rely on.",
+    needsReplyFrom: null
+  },{
+    speaker: "Me",
+    type: "me",
+    text: "Whenever your eyes fill with tears, whenever your heart trembles… I’ll be there. Without hesitation. Without distance. Without fear.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Ne kallu taddichina… ne khallu tadabaddina… nē kosam nēnu vastā.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "I believed you… and I'll do.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "And I'll stay with you and I'll never leave you for another man",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "okkkkkk ",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Hmmmmm ",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "Hmmmmm",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "I love you ani neku assalu cheppanu",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "Nenu kuda neku I love you ani assalu cheppanu ",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Me",
+    type: "me",
+    text: "you know people say if you wish for something and if it's valid god will grant it ",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "Really.....",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Kavya",
+    type: "her",
+    text: "then wish there was a full moon. Not some crazy sky, just a normal one with a few simple stars.",
+    needsReplyFrom: null
+  },
+  {
+    speaker: "Narration",
+    type: "narrator",
+    text: "And this… is just the beginning of our story.",
+    needsReplyFrom: null
+  }
+];
+
+       
+
+    const lineContainer = document.getElementById("lineContainer");
+    const tapArea = document.getElementById("tapArea");
+    const hint = document.getElementById("hint");
+
+    const nightOverlay = document.getElementById("nightOverlay");
+    const moon = document.getElementById("moon");
+    const starsContainer = document.getElementById("stars");
+
+    const replyArea = document.getElementById("replyArea");
+    const replyLabel = document.getElementById("replyLabel");
+    const replyInput = document.getElementById("replyInput");
+    const replyBtn = document.getElementById("replyBtn");
+
+    const replayBtn = document.getElementById("replayBtn");
+
+    let index = 0;
+    let started = false;
+    let waitingForReply = false;
+
+    const allowedReplies = [
+      "ok", "okay",
+      "haa", "ha",
+      "ya", "yaa",
+      "yes", "cheyaaa",
+      "hoo", "yoo",
+      "hmm", "hmmm"
+    ];
+
+    function showLine(item) {
+      lineContainer.innerHTML = "";
+
+      const div = document.createElement("div");
+      div.classList.add("line", item.type);
+
+      const speakerSpan = document.createElement("span");
+      speakerSpan.classList.add("speaker");
+      speakerSpan.textContent = item.type === "narrator" ? "" : item.speaker;
+
+      const textSpan = document.createElement("span");
+      textSpan.textContent = item.text;
+
+      if (item.type !== "narrator") {
+        div.appendChild(speakerSpan);
+      }
+      div.appendChild(textSpan);
+
+      lineContainer.appendChild(div);
+    }
+
+    function showReplyPrompt(role) {
+      replyArea.classList.add("show");
+      replyInput.value = "";
+
+      replyLabel.textContent =
+        role === "her"
+          ? "Type her reply to continue"
+          : "Type your reply to continue";
+
+      replyInput.placeholder = "ok, haa, yaa, hoo...";
+      replyInput.focus();
+    }
+
+    function hideReplyPrompt() {
+      waitingForReply = false;
+      replyArea.classList.remove("show");
+      tapArea.style.pointerEvents = "auto";
+    }
+
+    function checkReply() {
+      const value = replyInput.value.trim().toLowerCase();
+
+      if (allowedReplies.includes(value)) {
+        hideReplyPrompt();
+        nextLine();
+      } else if (value.length > 0) {
+        replyInput.classList.add("shake");
+        setTimeout(() => replyInput.classList.remove("shake"), 300);
+      }
+    }
+
+    function nextLine() {
+      if (waitingForReply) return;
+      if (index >= script.length) return;
+
+      const item = script[index];
+
+      // Moon reveal when "full moon" mentioned
+      if (item.text.toLowerCase().includes("full moon")) {
+        nightOverlay.classList.add("fade-out");
+        moon.classList.add("visible");
+      }
+
+      showLine(item);
+      index++;
+
+      if (index > 0) {
+        hint.classList.add("hidden");
+      }
+
+      if (item.needsReplyFrom) {
+        // 🔹 Mark that we're now waiting
+        waitingForReply = true;
+        tapArea.style.pointerEvents = "none";
+
+        // 🔹 Show textbox a bit AFTER the line appears
+        setTimeout(() => {
+          showReplyPrompt(item.needsReplyFrom);
+        }, 500); // 0.5s delay so it feels like "after he talks"
+      } else if (index === script.length) {
+        replayBtn.classList.add("show");
+      }
+    }
+
+    tapArea.addEventListener("click", () => {
+      if (waitingForReply) return; // ignore taps while input is active
+      started = true;
+      nextLine();
+    });
+
+    replyBtn.addEventListener("click", checkReply);
+
+    replyInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        checkReply();
+      }
+    });
+
+    replayBtn.addEventListener("click", () => {
+      index = 0;
+      started = false;
+      waitingForReply = false;
+
+      nightOverlay.classList.remove("fade-out");
+      moon.classList.remove("visible");
+      replyArea.classList.remove("show");
+      replayBtn.classList.remove("show");
+      tapArea.style.pointerEvents = "auto";
+
+      lineContainer.innerHTML = "";
+      hint.classList.remove("hidden");
+
+      nextLine();
+    });
+
+    function createStars(count = 40) {
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement("span");
+        star.classList.add("star");
+        star.style.top = Math.random() * 55 + "vh";
+        star.style.left = Math.random() * 100 + "vw";
+        star.style.setProperty("--delay", Math.random() * 4 + "s");
+        starsContainer.appendChild(star);
+      }
+    }
+
+    createStars();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
