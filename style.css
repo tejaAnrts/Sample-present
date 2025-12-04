@@ -113,7 +113,7 @@ body {
 .line {
   position: absolute;
   bottom: 0;
-  max-width: 260px;
+  max-width: 360px;
   padding: 10px 14px;
   border-radius: 16px;
   font-size: 0.95rem;
@@ -314,7 +314,7 @@ body {
   }
 
   .line.me {
-    left: 72vw;
+    left: 60vw;
   }
 
   /* Reply box width */
@@ -328,6 +328,7 @@ body {
     height: 90px;
   }
 }
+
 
 
 
