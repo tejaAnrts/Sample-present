@@ -1,3 +1,4 @@
+/* Updated style.css — tuned for your main-couple.png */
 *{
   box-sizing:border-box;
   margin:0;padding:0
@@ -18,7 +19,8 @@ body{
   position:relative;
   width:100vw;
   height:100vh;
-  overflow:hidden
+  overflow:hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 .bg-video{
   position:absolute;
@@ -75,16 +77,19 @@ body{
 }
 
 /* couple image centered */
+
 .couple{
   position:absolute;
-  bottom:0;
   left:50%;
+  bottom:0;
   transform:translateX(-50%);
-  width:min(72vw,520px);
-  max-height:66vh;
-  height:auto;
+  width: min(92vw, 520px);
+  max-width: 100%;
+  height: auto;
+  max-height: 72vh;
   z-index:5;
-  pointer-events:none
+  pointer-events:none;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 /* dialogue container (semantic only) */
@@ -238,20 +243,21 @@ body{
 /* responsive */
 @media (max-width:720px){
   .couple{
-     width:min(86vw,420px); 
-     max-height:62vh 
+     width: min(96vw, 420px);
+     max-height: 78vh;
   }
-  .line{ 
-    max-width:260px; 
-    font-size:0.98rem 
+
+  .line{
+    max-width:260px;
+    font-size:0.98rem;
   }
-  .reply-area{ 
-    bottom:9vh; 
-    width:min(95%,420px) 
+  .reply-area{
+    bottom:calc(9vh + env(safe-area-inset-bottom, 0));
+    width:min(95%,420px)
   }
-  .hint{ 
-    bottom:5.2vh; 
-    font-size:0.86rem 
+  .hint{
+    bottom:calc(5.2vh + env(safe-area-inset-bottom, 0));
+    font-size:0.86rem
   }
 }
 
