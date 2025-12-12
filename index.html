@@ -368,6 +368,7 @@
     let waitingForReply = false;
     const allowedReplies = ["ok","okay","haa","ha","ya","yaa","yes","hoo","yoo","hmm","hmmm"];
 
+    const HEAD_RATIO = 0.36;
     function createBubble(item) {
       const div = document.createElement('div');
       div.className = 'line ' + item.type;
@@ -579,5 +580,6 @@
   </script>
 </body>
 </html>
+
 
 
