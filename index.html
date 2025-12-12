@@ -1,70 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>Our Night On The Terrace</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
   <div class="scene">
-
-    <!-- Background Sky Video -->
-    <video src="sky-2.mp4" autoplay muted loop playsinline></video>
-
-    <!-- Dark overlay -->
+    <video class="bg-video" src="sky-2.mp4" autoplay muted loop playsinline></video>
     <div class="night-overlay" id="nightOverlay"></div>
-
-    <!-- Stars overlay -->
     <div class="stars" id="stars"></div>
-
-    <!-- Moon -->
     <div class="moon" id="moon"></div>
 
-    <!-- Couple -->
+    <!-- main couple image (must be present) -->
     <img src="main-couple.png" class="couple" alt="Couple on terrace" />
 
-    <!-- Dialogue + reply -->
-    <div class="dialogue">
+    <div class="dialogue" aria-hidden="true">
       <div id="lineContainer"></div>
-
-      <!-- Reply Input (hidden by default) -->
-      <div class="reply-area" id="replyArea">
-        <div class="reply-label" id="replyLabel">Type reply to continue</div>
-
-        <div class="reply-row">
-          <input
-            id="replyInput"
-            type="text"
-            autocomplete="off"
-            placeholder="ok, haa, yaa, hoo..."
-          />
-          <button id="replyBtn">Send</button>
-        </div>
-
-        <div class="reply-hint">
-          Use short replies like: ok, haa, yaa, hoo, hmm
-        </div>
-      </div>
-
-      <div class="hint" id="hint"></div>
     </div>
 
-    <!-- Replay Button -->
-    <button class="replay-btn" id="replayBtn">Replay this night</button>
+    <div class="reply-area" id="replyArea" aria-hidden="true">
+      <div class="reply-label" id="replyLabel">Type reply to continue</div>
+      <div class="reply-row">
+        <input id="replyInput" type="text" autocomplete="off" placeholder="ok, haa, yaa..." />
+        <button id="replyBtn">Send</button>
+      </div>
+      <div class="reply-hint">Use short replies like: ok, haa, yaa, hoo, hmm</div>
+    </div>
 
-    <!-- Tap area to advance (disabled while waiting for reply) -->
+    <div class="hint" id="hint"></div>
+    <button class="replay-btn" id="replayBtn" aria-hidden="true">Replay</button>
     <div class="tap-area" id="tapArea"></div>
   </div>
 
   <script>
-    // Conversation with reply logic
-    // You can later add many more entries here
+    // conversation script (short sample; you can edit)
     const script = [
-  // --- Playful start ---
-
-  {
+      {
     speaker: "Me",
     type: "me",
     text: "hmmmmmmm ",
@@ -370,179 +343,239 @@
     text: "then wish there was a full moon. Not some crazy sky, just a normal one with a few simple stars.",
     needsReplyFrom: null
   },
-  {
-    speaker: "Narration",
-    type: "narrator",
-    text: "And this… is just the beginning of our story.",
-    needsReplyFrom: null
-  }
-];
-
-       
-
-    const lineContainer = document.getElementById("lineContainer");
-    const tapArea = document.getElementById("tapArea");
-    const hint = document.getElementById("hint");
-
-    const nightOverlay = document.getElementById("nightOverlay");
-    const moon = document.getElementById("moon");
-    const starsContainer = document.getElementById("stars");
-
-    const replyArea = document.getElementById("replyArea");
-    const replyLabel = document.getElementById("replyLabel");
-    const replyInput = document.getElementById("replyInput");
-    const replyBtn = document.getElementById("replyBtn");
-
-    const replayBtn = document.getElementById("replayBtn");
-
-    let index = 0;
-    let started = false;
-    let waitingForReply = false;
-
-    const allowedReplies = [
-      "ok", "okay",
-      "haa", "ha",
-      "ya", "yaa",
-      "yes", "cheyaaa",
-      "hoo", "yoo",
-      "hmm", "hmmm"
+  { 
+    speaker: "Narration", 
+    type: "narrator", 
+    text: "And this… is just the beginning of our story.", 
+    needsReplyFrom: null }
     ];
 
-    function showLine(item) {
-      lineContainer.innerHTML = "";
+    const lineContainer = document.getElementById('lineContainer');
+    const tapArea = document.getElementById('tapArea');
+    const hint = document.getElementById('hint');
 
-      const div = document.createElement("div");
-      div.classList.add("line", item.type);
+    const nightOverlay = document.getElementById('nightOverlay');
+    const moon = document.getElementById('moon');
+    const starsContainer = document.getElementById('stars');
 
-      const speakerSpan = document.createElement("span");
-      speakerSpan.classList.add("speaker");
-      speakerSpan.textContent = item.type === "narrator" ? "" : item.speaker;
+    const replyArea = document.getElementById('replyArea');
+    const replyLabel = document.getElementById('replyLabel');
+    const replyInput = document.getElementById('replyInput');
+    const replyBtn = document.getElementById('replyBtn');
+    const replayBtn = document.getElementById('replayBtn');
 
-      const textSpan = document.createElement("span");
-      textSpan.textContent = item.text;
+    let index = 0;
+    let waitingForReply = false;
+    const allowedReplies = ["ok","okay","haa","ha","ya","yaa","yes","hoo","yoo","hmm","hmmm"];
 
-      if (item.type !== "narrator") {
-        div.appendChild(speakerSpan);
+    function createBubble(item) {
+      const div = document.createElement('div');
+      div.className = 'line ' + item.type;
+      if (item.type !== 'narrator') {
+        const sp = document.createElement('span');
+        sp.className = 'speaker';
+        sp.textContent = item.speaker;
+        div.appendChild(sp);
       }
+      const textSpan = document.createElement('span');
+      textSpan.className = 'text';
+      textSpan.textContent = item.text;
       div.appendChild(textSpan);
 
-      lineContainer.appendChild(div);
+      // Append to body so bubbles are positioned in viewport coords
+      document.body.appendChild(div);
+      return div;
+    }
+
+    function clearBubbles() {
+      document.querySelectorAll('body > .line').forEach(el => el.remove());
+    }
+
+    function showLine(item) {
+      clearBubbles();
+      const bubble = createBubble(item);
+      // animate
+      void bubble.offsetWidth;
+      bubble.classList.add('visible');
+
+      // reposition after bubble exists
+      requestAnimationFrame(() => {
+        if (window.positionBubbles) window.positionBubbles();
+      });
+      return bubble;
     }
 
     function showReplyPrompt(role) {
-      replyArea.classList.add("show");
-      replyInput.value = "";
-
-      replyLabel.textContent =
-        role === "her"
-          ? "Type her reply to continue"
-          : "Type your reply to continue";
-
-      replyInput.placeholder = "ok, haa, yaa, hoo...";
+      waitingForReply = true;
+      replyArea.setAttribute('aria-hidden','false');
+      replyArea.classList.add('show');
+      replyLabel.textContent = role === 'her' ? 'Type her reply to continue' : 'Type your reply to continue';
+      replyInput.value = '';
       replyInput.focus();
+      tapArea.style.pointerEvents = 'none';
     }
 
     function hideReplyPrompt() {
       waitingForReply = false;
-      replyArea.classList.remove("show");
-      tapArea.style.pointerEvents = "auto";
+      replyArea.setAttribute('aria-hidden','true');
+      replyArea.classList.remove('show');
+      tapArea.style.pointerEvents = 'auto';
     }
 
     function checkReply() {
-      const value = replyInput.value.trim().toLowerCase();
-
-      if (allowedReplies.includes(value)) {
+      const v = replyInput.value.trim().toLowerCase();
+      if (allowedReplies.includes(v)) {
         hideReplyPrompt();
         nextLine();
-      } else if (value.length > 0) {
-        replyInput.classList.add("shake");
-        setTimeout(() => replyInput.classList.remove("shake"), 300);
+      } else if (v.length) {
+        replyInput.classList.add('shake');
+        setTimeout(()=>replyInput.classList.remove('shake'),300);
       }
     }
 
     function nextLine() {
       if (waitingForReply) return;
       if (index >= script.length) return;
-
       const item = script[index];
 
-      // Moon reveal when "full moon" mentioned
-      if (item.text.toLowerCase().includes("full moon")) {
-        nightOverlay.classList.add("fade-out");
-        moon.classList.add("visible");
+      if (item.text.toLowerCase().includes('full moon')) {
+        nightOverlay.classList.add('fade-out');
+        moon.classList.add('visible');
       }
 
       showLine(item);
       index++;
-
-      if (index > 0) {
-        hint.classList.add("hidden");
-      }
+      hint.classList.add('hidden');
 
       if (item.needsReplyFrom) {
-        // 🔹 Mark that we're now waiting
-        waitingForReply = true;
-        tapArea.style.pointerEvents = "none";
-
-        // 🔹 Show textbox a bit AFTER the line appears
-        setTimeout(() => {
-          showReplyPrompt(item.needsReplyFrom);
-        }, 500); // 0.5s delay so it feels like "after he talks"
+        setTimeout(()=>showReplyPrompt(item.needsReplyFrom), 450);
       } else if (index === script.length) {
-        replayBtn.classList.add("show");
+        replayBtn.classList.add('show');
+        replayBtn.setAttribute('aria-hidden','false');
       }
     }
 
-    tapArea.addEventListener("click", () => {
-      if (waitingForReply) return; // ignore taps while input is active
-      started = true;
-      nextLine();
-    });
-
-    replyBtn.addEventListener("click", checkReply);
-
-    replyInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        checkReply();
+    let hasStarted = false;
+    tapArea.addEventListener('click', () => {
+      if(!hasStarted){
+        hasStarted = true;
+        nextLine();
+        return;
       }
+      if(!waitingForReply) nextLine();
     });
+    replyBtn.addEventListener('click', checkReply);
+    replyInput.addEventListener('keydown', (e)=> { if (e.key === 'Enter') checkReply(); });
 
-    replayBtn.addEventListener("click", () => {
+    replayBtn.addEventListener('click', ()=> {
       index = 0;
-      started = false;
       waitingForReply = false;
-
-      nightOverlay.classList.remove("fade-out");
-      moon.classList.remove("visible");
-      replyArea.classList.remove("show");
-      replayBtn.classList.remove("show");
-      tapArea.style.pointerEvents = "auto";
-
-      lineContainer.innerHTML = "";
-      hint.classList.remove("hidden");
-
+      nightOverlay.classList.remove('fade-out');
+      moon.classList.remove('visible');
+      replyArea.classList.remove('show');
+      replayBtn.classList.remove('show');
+      clearBubbles();
+      hint.classList.remove('hidden');
+      tapArea.style.pointerEvents = 'auto';
       nextLine();
     });
 
-    function createStars(count = 40) {
-      for (let i = 0; i < count; i++) {
-        const star = document.createElement("span");
-        star.classList.add("star");
-        star.style.top = Math.random() * 55 + "vh";
-        star.style.left = Math.random() * 100 + "vw";
-        star.style.setProperty("--delay", Math.random() * 4 + "s");
-        starsContainer.appendChild(star);
+    // background stars
+    (function createStars(n=40){
+      for (let i=0;i<n;i++){
+        const s = document.createElement('span');
+        s.className='star';
+        s.style.top = (Math.random()*55)+'vh';
+        s.style.left = (Math.random()*100)+'vw';
+        s.style.setProperty('--delay', (Math.random()*4)+'s');
+        starsContainer.appendChild(s);
       }
+    })();
+  </script>
+  <script>
+  (function(){
+    // Tuned values (calculated from your actual main-couple.png)
+    // HEAD_RATIO = fraction from image top where heads sit (~0.34 of image height)
+    const HEAD_RATIO = 0.34;
+    const GAP = 12;         // px gap between bubble and image edge
+    const SAFE_PAD = 10;    // px padding from viewport edges
+    // horizontal offsets relative to image center (tuned for your image)
+    const HER_OFFSET = -0.12;
+    const ME_OFFSET  = 0.18;
+
+    const couple = document.querySelector('.couple');
+    if (!couple) { console.warn('positionBubbles: .couple image not found'); return; }
+
+    function placeAvoid(bubbleEl, centerX, imageRect) {
+      if (!bubbleEl) return;
+      // ensure measured as fixed
+      bubbleEl.style.position = 'fixed';
+      bubbleEl.style.transform = 'none';
+      bubbleEl.style.zIndex = 1001;
+
+      // measure natural size (put offscreen temporarily to avoid clipping)
+      bubbleEl.style.left = '-9999px';
+      bubbleEl.style.top = '-9999px';
+      const bRect = bubbleEl.getBoundingClientRect();
+      const bw = Math.max(80, Math.round(bRect.width));
+      const bh = Math.max(24, Math.round(bRect.height));
+
+      // compute image head top in viewport coords
+      const headTop = imageRect.top + imageRect.height * HEAD_RATIO;
+
+      // prefer above
+      let topAbove = Math.round(headTop - bh - GAP);
+      // if above would be too close to top, place below image
+      let top;
+      if (topAbove >= SAFE_PAD) {
+        top = topAbove;
+      } else {
+        // place below image
+        top = Math.round(imageRect.bottom + GAP);
+        // if that pushes bubble off bottom, clamp so bubble stays visible (but won't overlap image)
+        if (top + bh + SAFE_PAD > window.innerHeight) {
+          top = Math.max(SAFE_PAD, window.innerHeight - bh - SAFE_PAD);
+        }
+      }
+
+      // horizontal centered at centerX, clamped
+      let left = Math.round(centerX - bw / 2);
+      left = Math.max(SAFE_PAD, Math.min(window.innerWidth - bw - SAFE_PAD, left));
+
+      bubbleEl.style.top = top + 'px';
+      bubbleEl.style.left = left + 'px';
+      bubbleEl.style.width = 'auto';
     }
 
-    createStars();
+    function positionNow() {
+      const rect = couple.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      const centerX = rect.left + rect.width/2;
+      const herCenter = Math.round(centerX + rect.width * HER_OFFSET);
+      const meCenter  = Math.round(centerX + rect.width * ME_OFFSET);
+
+      const her = document.querySelector('.line.her');
+      const me  = document.querySelector('.line.me');
+      const narrator = document.querySelector('.line.narrator');
+
+      if (her) placeAvoid(her, herCenter, rect);
+      if (me)  placeAvoid(me, meCenter, rect);
+      if (narrator) placeAvoid(narrator, centerX, rect);
+    }
+
+    // expose and wire events
+    window.positionBubbles = function(){ requestAnimationFrame(positionNow); };
+    window.addEventListener('resize', window.positionBubbles);
+    window.addEventListener('orientationchange', window.positionBubbles);
+    window.addEventListener('scroll', window.positionBubbles);
+    if (couple.complete) window.positionBubbles();
+    else couple.addEventListener('load', window.positionBubbles, { once:true });
+
+    // retries for layout shifts
+    setTimeout(window.positionBubbles, 250);
+    setTimeout(window.positionBubbles, 900);
+  })();
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
